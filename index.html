@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Lean Code Test</title>
+</head>
+
+<body>
+  <h2>Lean code</h2>
+
+  <pre id="code">Loading...</pre>
+
+  <script>
+    fetch("./sample.lean")
+      .then(response => response.text())
+      .then(code => {
+        document.getElementById("code").textContent = code;
+      })
+      .catch(error => {
+        document.getElementById("code").textContent =
+          "Error: " + error;
+      });
+  </script>
+</body>
+</html>
