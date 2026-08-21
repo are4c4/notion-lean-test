@@ -5,109 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lean Code Viewer</title>
   <style>
-    :root {
-      color-scheme: light dark;
-      --bg: #f7f7f5;
-      --panel: #ffffff;
-      --border: #e5e5e0;
-      --text: #2f3437;
-      --muted: #787774;
-      --code-bg: #f3f3f2;
-      --keyword: #7c3aed;
-      --command: #2563eb;
-      --type: #b45309;
-      --comment: #6b7280;
-      --string: #047857;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #191919;
-        --panel: #202020;
-        --border: #343434;
-        --text: #e6e6e6;
-        --muted: #a0a0a0;
-        --code-bg: #252525;
-        --keyword: #c4b5fd;
-        --command: #93c5fd;
-        --type: #fcd34d;
-        --comment: #9ca3af;
-        --string: #6ee7b7;
-      }
-    }
-
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      padding: 16px;
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-    .viewer {
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-      background: var(--panel);
-    }
-    .toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 10px 12px;
-      border-bottom: 1px solid var(--border);
-      font-size: 13px;
-    }
-    .filename {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      color: var(--muted);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .actions { display: flex; gap: 8px; flex-shrink: 0; }
-    button, a.button {
-      appearance: none;
-      border: 1px solid var(--border);
-      border-radius: 7px;
-      background: var(--panel);
-      color: var(--text);
-      padding: 6px 9px;
-      font-size: 12px;
-      cursor: pointer;
-      text-decoration: none;
-    }
-    button:hover, a.button:hover { background: var(--code-bg); }
-    .code-wrap { overflow: auto; background: var(--code-bg); }
-    table { border-collapse: collapse; width: 100%; }
-    td {
-      vertical-align: top;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: 13px;
-      line-height: 1.55;
-    }
-    td.line-no {
-      user-select: none;
-      width: 1%;
-      min-width: 42px;
-      padding: 10px 10px 10px 12px;
-      text-align: right;
-      color: var(--muted);
-      border-right: 1px solid var(--border);
-    }
-    td.code-line { padding: 10px 14px; white-space: pre; }
-    .kw { color: var(--keyword); font-weight: 600; }
-    .cmd { color: var(--command); font-weight: 600; }
-    .type { color: var(--type); }
-    .comment { color: var(--comment); font-style: italic; }
-    .string { color: var(--string); }
-    .error {
-      padding: 16px;
-      color: #d14343;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      white-space: pre-wrap;
-    }
+    :root{color-scheme:light dark;--bg:#f7f7f5;--panel:#fff;--border:#e5e5e0;--text:#2f3437;--muted:#787774;--code-bg:#f3f3f2;--kw:#7c3aed;--cmd:#2563eb;--type:#b45309;--comment:#6b7280}
+    @media(prefers-color-scheme:dark){:root{--bg:#191919;--panel:#202020;--border:#343434;--text:#e6e6e6;--muted:#aaa;--code-bg:#252525;--kw:#c4b5fd;--cmd:#93c5fd;--type:#fcd34d;--comment:#9ca3af}}
+    *{box-sizing:border-box}body{margin:0;padding:16px;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.viewer{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--panel)}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px}.filename{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.actions{display:flex;gap:8px;flex-shrink:0}button,a.button{border:1px solid var(--border);border-radius:7px;background:var(--panel);color:var(--text);padding:6px 9px;font-size:12px;cursor:pointer;text-decoration:none}.debug{padding:8px 12px;border-bottom:1px solid var(--border);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;line-height:1.5;color:var(--muted);background:var(--panel)}.debug strong{color:var(--text)}.code-wrap{overflow:auto;background:var(--code-bg)}table{border-collapse:collapse;width:100%}td{vertical-align:top;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.55}td.line-no{user-select:none;width:1%;min-width:42px;padding:10px;text-align:right;color:var(--muted);border-right:1px solid var(--border)}td.code-line{padding:10px 14px;white-space:pre}.kw{color:var(--kw);font-weight:600}.cmd{color:var(--cmd);font-weight:600}.type{color:var(--type)}.comment{color:var(--comment);font-style:italic}.error{padding:16px;color:#d14343;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap}
   </style>
 </head>
 <body>
@@ -120,11 +20,17 @@
         <a id="githubBtn" class="button" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
       </div>
     </div>
+    <div class="debug">
+      <div>Viewer: <strong id="viewerVersion"></strong></div>
+      <div>Viewer opened: <strong id="openedAt"></strong></div>
+      <div>Raw fetched: <strong id="fetchedAt">not yet</strong></div>
+    </div>
     <div id="codeWrap" class="code-wrap"></div>
   </div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
+    const VIEWER_VERSION = '2026-08-21-1451-v2';
+    const params = new URLSearchParams(location.search);
     const repo = params.get('repo') || 'notion-lean-test';
     const owner = params.get('owner') || 'are4c4';
     const branch = params.get('branch') || 'main';
@@ -136,102 +42,47 @@
     const copyBtn = document.getElementById('copyBtn');
     const reloadBtn = document.getElementById('reloadBtn');
     const githubBtn = document.getElementById('githubBtn');
-
+    const viewerVersionEl = document.getElementById('viewerVersion');
+    const openedAtEl = document.getElementById('openedAt');
+    const fetchedAtEl = document.getElementById('fetchedAt');
     let displayedCode = '';
 
+    const fmt = d => new Intl.DateTimeFormat('ja-JP',{dateStyle:'short',timeStyle:'medium'}).format(d);
+    viewerVersionEl.textContent = VIEWER_VERSION;
+    openedAtEl.textContent = fmt(new Date());
     filenameEl.textContent = decl ? `${owner}/${repo}/${file} — ${decl}` : `${owner}/${repo}/${file}`;
     githubBtn.href = `https://github.com/${owner}/${repo}/blob/${branch}/${file}`;
 
-    function escapeHtml(text) {
-      return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    function escapeHtml(text){return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+    function highlightLean(line){
+      let html=escapeHtml(line); const i=html.indexOf('--'); let c=i>=0?html.slice(0,i):html; const cm=i>=0?html.slice(i):'';
+      c=c.replace(/\b(theorem|lemma|example|def|abbrev|structure|class|instance|namespace|section|end|variable|variables|universe|open|export|noncomputable|private|protected|mutual|where|deriving|inductive|coinductive)\b/g,'<span class="kw">$1</span>');
+      c=c.replace(/\b(import|by|simp|simpa|rw|rfl|exact|apply|intro|intros|constructor|cases|induction|have|show|calc|refine|aesop|omega|linarith|norm_num|ring|field_simp|positivity|decide)\b/g,'<span class="cmd">$1</span>');
+      c=c.replace(/\b(Type|Prop|Nat|Int|Rat|Real|Complex|Fin|Set|Field|Ring|Group|Monoid|AddGroup|CommRing|IntegralDomain)\b/g,'<span class="type">$1</span>');
+      if(cm)c+=`<span class="comment">${cm}</span>`; return c;
     }
-
-    function highlightLean(line) {
-      let html = escapeHtml(line);
-      const commentIndex = html.indexOf('--');
-      let codePart = commentIndex >= 0 ? html.slice(0, commentIndex) : html;
-      const commentPart = commentIndex >= 0 ? html.slice(commentIndex) : '';
-
-      codePart = codePart.replace(/(&quot;.*?&quot;|&apos;.*?&apos;)/g, '<span class="string">$1</span>');
-      codePart = codePart.replace(/\b(theorem|lemma|example|def|abbrev|structure|class|instance|namespace|section|end|variable|variables|universe|open|export|noncomputable|private|protected|mutual|where|deriving|inductive|coinductive)\b/g, '<span class="kw">$1</span>');
-      codePart = codePart.replace(/\b(import|by|simp|simpa|rw|rfl|exact|apply|intro|intros|constructor|cases|induction|have|show|calc|refine|aesop|omega|linarith|norm_num|ring|field_simp|positivity|decide)\b/g, '<span class="cmd">$1</span>');
-      codePart = codePart.replace(/\b(Type|Prop|Nat|Int|Rat|Real|Complex|Fin|Set|Field|Ring|Group|Monoid|AddGroup|CommRing|IntegralDomain)\b/g, '<span class="type">$1</span>');
-
-      if (commentPart) codePart += `<span class="comment">${commentPart}</span>`;
-      return codePart;
+    function extractDeclaration(source,name){
+      const lines=source.split('\n'); const p=/^\s*(?:theorem|lemma|example|def|abbrev|instance|structure|class|inductive)\s+([^\s(:{]+)/; let start=-1;
+      for(let i=0;i<lines.length;i++){const m=lines[i].match(p);if(m&&m[1]===name){start=i;break}}
+      if(start===-1)throw new Error(`Declaration "${name}" was not found in ${file}.`);
+      let end=lines.length; for(let i=start+1;i<lines.length;i++){if(lines[i].match(p)){end=i;break}} while(end>start&&lines[end-1].trim()==='')end--;
+      return{code:lines.slice(start,end).join('\n'),startLine:start+1};
     }
-
-    function extractDeclaration(source, name) {
-      const lines = source.split('\n');
-      const declarationPattern = /^\s*(?:theorem|lemma|example|def|abbrev|instance|structure|class|inductive)\s+([^\s(:{]+)/;
-      let start = -1;
-
-      for (let i = 0; i < lines.length; i++) {
-        const match = lines[i].match(declarationPattern);
-        if (match && match[1] === name) {
-          start = i;
-          break;
-        }
-      }
-
-      if (start === -1) throw new Error(`Declaration "${name}" was not found in ${file}.`);
-
-      let end = lines.length;
-      for (let i = start + 1; i < lines.length; i++) {
-        if (lines[i].match(declarationPattern)) {
-          end = i;
-          break;
-        }
-      }
-
-      while (end > start && lines[end - 1].trim() === '') end--;
-      return { code: lines.slice(start, end).join('\n'), startLine: start + 1 };
+    function renderCode(code,firstLine=1){
+      displayedCode=code; const rows=code.split('\n').map((line,index)=>`<tr><td class="line-no">${firstLine+index}</td><td class="code-line">${highlightLean(line)||'&nbsp;'}</td></tr>`).join('');
+      codeWrap.innerHTML=`<table><tbody>${rows}</tbody></table>`;
     }
-
-    function renderCode(code, firstLine = 1) {
-      displayedCode = code;
-      const rows = code.split('\n').map((line, index) => `
-        <tr>
-          <td class="line-no">${firstLine + index}</td>
-          <td class="code-line">${highlightLean(line) || '&nbsp;'}</td>
-        </tr>
-      `).join('');
-      codeWrap.innerHTML = `<table><tbody>${rows}</tbody></table>`;
+    async function loadCode(){
+      codeWrap.innerHTML='<div class="error">Loading…</div>'; fetchedAtEl.textContent='fetching…';
+      const rawUrl=`https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file}?t=${Date.now()}`;
+      try{
+        const response=await fetch(rawUrl,{cache:'no-store'}); if(!response.ok)throw new Error(`HTTP ${response.status}: ${response.statusText}`); const source=await response.text();
+        fetchedAtEl.textContent=fmt(new Date());
+        if(decl){const r=extractDeclaration(source,decl);renderCode(r.code,r.startLine)}else{renderCode(source,1)}
+      }catch(error){fetchedAtEl.textContent='failed';codeWrap.innerHTML=`<div class="error">${escapeHtml(String(error))}</div>`}
     }
-
-    async function loadCode() {
-      codeWrap.innerHTML = '<div class="error">Loading…</div>';
-      const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file}?t=${Date.now()}`;
-
-      try {
-        const response = await fetch(rawUrl, { cache: 'no-store' });
-        if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        const source = await response.text();
-
-        if (decl) {
-          const result = extractDeclaration(source, decl);
-          renderCode(result.code, result.startLine);
-        } else {
-          renderCode(source, 1);
-        }
-      } catch (error) {
-        codeWrap.innerHTML = `<div class="error">${escapeHtml(String(error))}</div>`;
-      }
-    }
-
-    reloadBtn.addEventListener('click', loadCode);
-
-    copyBtn.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(displayedCode);
-        const original = copyBtn.textContent;
-        copyBtn.textContent = 'Copied!';
-        setTimeout(() => copyBtn.textContent = original, 1200);
-      } catch {
-        copyBtn.textContent = 'Copy failed';
-      }
-    });
-
+    reloadBtn.addEventListener('click',loadCode);
+    copyBtn.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(displayedCode);copyBtn.textContent='Copied!';setTimeout(()=>copyBtn.textContent='Copy',1200)}catch{copyBtn.textContent='Copy failed'}});
     loadCode();
   </script>
 </body>
