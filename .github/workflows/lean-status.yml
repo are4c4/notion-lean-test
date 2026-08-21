@@ -1,0 +1,51 @@
+name: Lean status
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**/*.lean'
+      - 'lakefile.lean'
+      - 'lean-toolchain'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Lean project
+        id: lean
+        uses: leanprover/lean-action@v1
+        continue-on-error: true
+        with:
+          build: true
+          test: false
+          lint: false
+
+      - name: Write status file
+        env:
+          BUILD_STATUS: ${{ steps.lean.outputs.build-status }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          if [ "$BUILD_STATUS" = "SUCCESS" ]; then
+            OK=true
+            LABEL="Compiles"
+          else
+            OK=false
+            LABEL="Error"
+          fi
+          printf '{\n  "ok": %s,\n  "label": "%s",\n  "buildStatus": "%s",\n  "sha": "%s",\n  "checkedAt": "%s"\n}\n' \
+            "$OK" "$LABEL" "$BUILD_STATUS" "$COMMIT_SHA" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > lean-status.json
+
+      - name: Publish status file
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lean-status.json
+          git commit -m "Update Lean build status" || exit 0
+          git push
