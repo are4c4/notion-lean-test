@@ -37,7 +37,6 @@
     }
 
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       padding: 16px;
@@ -45,14 +44,12 @@
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-
     .viewer {
       border: 1px solid var(--border);
       border-radius: 10px;
       overflow: hidden;
       background: var(--panel);
     }
-
     .toolbar {
       display: flex;
       align-items: center;
@@ -62,7 +59,6 @@
       border-bottom: 1px solid var(--border);
       font-size: 13px;
     }
-
     .filename {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       color: var(--muted);
@@ -70,13 +66,7 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-
-    .actions {
-      display: flex;
-      gap: 8px;
-      flex-shrink: 0;
-    }
-
+    .actions { display: flex; gap: 8px; flex-shrink: 0; }
     button, a.button {
       appearance: none;
       border: 1px solid var(--border);
@@ -88,26 +78,15 @@
       cursor: pointer;
       text-decoration: none;
     }
-
     button:hover, a.button:hover { background: var(--code-bg); }
-
-    .code-wrap {
-      overflow: auto;
-      background: var(--code-bg);
-    }
-
-    table {
-      border-collapse: collapse;
-      width: 100%;
-    }
-
+    .code-wrap { overflow: auto; background: var(--code-bg); }
+    table { border-collapse: collapse; width: 100%; }
     td {
       vertical-align: top;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
       font-size: 13px;
       line-height: 1.55;
     }
-
     td.line-no {
       user-select: none;
       width: 1%;
@@ -117,18 +96,12 @@
       color: var(--muted);
       border-right: 1px solid var(--border);
     }
-
-    td.code-line {
-      padding: 10px 14px;
-      white-space: pre;
-    }
-
+    td.code-line { padding: 10px 14px; white-space: pre; }
     .kw { color: var(--keyword); font-weight: 600; }
     .cmd { color: var(--command); font-weight: 600; }
     .type { color: var(--type); }
     .comment { color: var(--comment); font-style: italic; }
     .string { color: var(--string); }
-
     .error {
       padding: 16px;
       color: #d14343;
@@ -142,6 +115,7 @@
     <div class="toolbar">
       <div id="filename" class="filename">Loading…</div>
       <div class="actions">
+        <button id="reloadBtn" type="button">Reload</button>
         <button id="copyBtn" type="button">Copy</button>
         <a id="githubBtn" class="button" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
       </div>
@@ -151,30 +125,29 @@
 
   <script>
     const params = new URLSearchParams(window.location.search);
+    const repo = params.get('repo') || 'notion-lean-test';
+    const owner = params.get('owner') || 'are4c4';
+    const branch = params.get('branch') || 'main';
     const file = params.get('file') || 'sample.lean';
     const decl = params.get('decl');
 
     const codeWrap = document.getElementById('codeWrap');
     const filenameEl = document.getElementById('filename');
     const copyBtn = document.getElementById('copyBtn');
+    const reloadBtn = document.getElementById('reloadBtn');
     const githubBtn = document.getElementById('githubBtn');
 
     let displayedCode = '';
-    let startLineNumber = 1;
 
-    filenameEl.textContent = decl ? `${file} — ${decl}` : file;
-    githubBtn.href = `https://github.com/are4c4/notion-lean-test/blob/main/${file}`;
+    filenameEl.textContent = decl ? `${owner}/${repo}/${file} — ${decl}` : `${owner}/${repo}/${file}`;
+    githubBtn.href = `https://github.com/${owner}/${repo}/blob/${branch}/${file}`;
 
     function escapeHtml(text) {
-      return text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
+      return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
     function highlightLean(line) {
       let html = escapeHtml(line);
-
       const commentIndex = html.indexOf('--');
       let codePart = commentIndex >= 0 ? html.slice(0, commentIndex) : html;
       const commentPart = commentIndex >= 0 ? html.slice(commentIndex) : '';
@@ -184,10 +157,7 @@
       codePart = codePart.replace(/\b(import|by|simp|simpa|rw|rfl|exact|apply|intro|intros|constructor|cases|induction|have|show|calc|refine|aesop|omega|linarith|norm_num|ring|field_simp|positivity|decide)\b/g, '<span class="cmd">$1</span>');
       codePart = codePart.replace(/\b(Type|Prop|Nat|Int|Rat|Real|Complex|Fin|Set|Field|Ring|Group|Monoid|AddGroup|CommRing|IntegralDomain)\b/g, '<span class="type">$1</span>');
 
-      if (commentPart) {
-        codePart += `<span class="comment">${commentPart}</span>`;
-      }
-
+      if (commentPart) codePart += `<span class="comment">${commentPart}</span>`;
       return codePart;
     }
 
@@ -204,61 +174,52 @@
         }
       }
 
-      if (start === -1) {
-        throw new Error(`Declaration "${name}" was not found in ${file}.`);
-      }
+      if (start === -1) throw new Error(`Declaration "${name}" was not found in ${file}.`);
 
       let end = lines.length;
       for (let i = start + 1; i < lines.length; i++) {
-        const match = lines[i].match(declarationPattern);
-        if (match) {
+        if (lines[i].match(declarationPattern)) {
           end = i;
           break;
         }
       }
 
-      while (end > start && lines[end - 1].trim() === '') {
-        end--;
-      }
-
-      return {
-        code: lines.slice(start, end).join('\n'),
-        startLine: start + 1
-      };
+      while (end > start && lines[end - 1].trim() === '') end--;
+      return { code: lines.slice(start, end).join('\n'), startLine: start + 1 };
     }
 
     function renderCode(code, firstLine = 1) {
       displayedCode = code;
-      startLineNumber = firstLine;
-      const lines = code.split('\n');
-      const rows = lines.map((line, index) => `
+      const rows = code.split('\n').map((line, index) => `
         <tr>
           <td class="line-no">${firstLine + index}</td>
           <td class="code-line">${highlightLean(line) || '&nbsp;'}</td>
         </tr>
       `).join('');
-
       codeWrap.innerHTML = `<table><tbody>${rows}</tbody></table>`;
     }
 
-    fetch(`./${file}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        return response.text();
-      })
-      .then(source => {
+    async function loadCode() {
+      codeWrap.innerHTML = '<div class="error">Loading…</div>';
+      const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file}?t=${Date.now()}`;
+
+      try {
+        const response = await fetch(rawUrl, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        const source = await response.text();
+
         if (decl) {
           const result = extractDeclaration(source, decl);
           renderCode(result.code, result.startLine);
         } else {
           renderCode(source, 1);
         }
-      })
-      .catch(error => {
+      } catch (error) {
         codeWrap.innerHTML = `<div class="error">${escapeHtml(String(error))}</div>`;
-      });
+      }
+    }
+
+    reloadBtn.addEventListener('click', loadCode);
 
     copyBtn.addEventListener('click', async () => {
       try {
@@ -270,6 +231,8 @@
         copyBtn.textContent = 'Copy failed';
       }
     });
+
+    loadCode();
   </script>
 </body>
 </html>
